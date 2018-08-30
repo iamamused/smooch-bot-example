@@ -20,7 +20,7 @@ class ConsoleBot extends Bot {
     }
 }
 
-const script = new Script({
+let script = new Script({  
     start: {
         receive: (bot) => {
             return bot.say('Hi! I\'m Smooch Bot!')
@@ -29,11 +29,21 @@ const script = new Script({
     },
 
     askName: {
-        prompt: (bot) => bot.say('What\'s your name'),
+        prompt: (bot) => bot.say('What\'s your name?'),
         receive: (bot, message) => {
-            const name = message.text.trim();
-            bot.setProp('name', name);
-            return bot.say(`I'll call you ${name}! Great!`)
+            const name = message.text;
+            return bot.setProp('name', name)
+                .then(() => bot.say(`Great! I'll call you ${name}`))
+                .then(() => 'askEmail');
+        }
+    },
+
+ 	askEmail: {
+        prompt: (bot) => bot.say('I\'ll also need your emails address please.'),
+        receive: (bot, message) => {
+            const email = message.text;
+            return bot.setProp('email', email)
+                .then(() => bot.say(`I have your email as ${email}.`))
                 .then(() => 'finish');
         }
     },
@@ -41,12 +51,12 @@ const script = new Script({
     finish: {
         receive: (bot, message) => {
             return bot.getProp('name')
-                .then((name) => bot.say(`Sorry ${name}, my creator didn't ` +
-                        'teach me how to do anything else!'))
+                .then((name) => bot.say(`Thanks ${name}, See you later!`))
                 .then(() => 'finish');
         }
     }
 });
+
 
 const userId = 'testUserId';
 const store = new MemoryStore();
