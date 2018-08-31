@@ -58,7 +58,7 @@ if (process.env.SERVICE_URL) {
     const smoochCore = new SmoochCore({
     	keyId: process.env.SMOOCH_KEY_ID,
     	secret: process.env.SMOOCH_SECRET,
-    	scope: 'app', // account or app
+    	scope: 'account', // account or app
 	});
     smoochCore.webhooks.list()
         .then((res) => {
