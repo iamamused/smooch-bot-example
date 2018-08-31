@@ -21,7 +21,7 @@ module.exports = new Script({
     },
 
  	completeHubspotProfile: {
-        prompt: (bot) => bot.say('What\'s your email address?'),
+        prompt: (bot) => bot.say('What\'s your email address? (Please enter a valid one, I\'m not too smart yet)'),
         receive: (bot, message) => {
             const email = message.text;
             return bot.setProp('email', email)
@@ -50,6 +50,7 @@ module.exports = new Script({
 						bot.say('I\'ve added the contact.')
 					}
 				})
+                .then(delay(500))
                 .then(() => bot.say(`Thanks ${bot.appUser.givenName}, TTYL!`))
 				.then(() => 'finish');
         }
