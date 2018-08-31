@@ -47,10 +47,19 @@ function updateWebhook(smoochCore, existingWebhook) {
 
 // Create a webhook if one doesn't already exist
 if (process.env.SERVICE_URL) {
+    console.log('Has SERVICE_URL %s, %s', process.env.SERVICE_URL);
+    console.log('SMOOCH_KEY_ID %s', process.env.SMOOCH_KEY_ID);
+    console.log('SMOOCH_SECRET %s', process.env.SMOOCH_SECRET);
+
     const target = process.env.SERVICE_URL.replace(/\/$/, '') + '/webhook';
+    //const smoochCore = new SmoochCore({
+    //    jwt
+    //});
     const smoochCore = new SmoochCore({
-        jwt
-    });
+    	keyId: process.env.SMOOCH_KEY_ID,
+    	secret: process.env.SMOOCH_SECRET,
+    	scope: 'app', // account or app
+	});
     smoochCore.webhooks.list()
         .then((res) => {
             const existingWebhook = res.webhooks.find((w) => w.target === target);
@@ -67,6 +76,8 @@ if (process.env.SERVICE_URL) {
                 updateWebhook(smoochCore, existingWebhook);
             }
         });
+} else {
+    console.log('does not hav SERVICE_URL %s', process.env.SERVICE_URL);
 }
 
 function createBot(appUser) {
