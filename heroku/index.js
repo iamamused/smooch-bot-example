@@ -86,13 +86,16 @@ function createBot(appUser) {
     const userId = appUser.userId || appUser._id;
     console.log('Create bot for user: %s (%s %s)', userId);
     console.log(util.inspect(appUser, false, null));
-    return new SmoochApiBot({
+    const bot = new SmoochApiBot({
         name,
         avatarUrl,
         lock,
         store,
         userId
     });
+    bot.setProp('firstname', appUser.givenName);
+    bot.setProp('lastname', appUser.surname);
+    return bot;
 }
 
 function handleMessages(req, res) {
