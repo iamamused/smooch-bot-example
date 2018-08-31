@@ -8,6 +8,8 @@ const Script = smoochBot.Script;
 const StateMachine = smoochBot.StateMachine;
 const requestPromise = require('request-promise-native');
 
+const delay = require("../delay-promise");
+
 
 class ConsoleBot extends Bot {
     constructor(options) {
@@ -35,6 +37,7 @@ let script = new Script({
         receive: (bot) => {
             return bot.say(`Hi ${bot.appUser.givenName}, I'm Welcome Bot!`)
                 .then(() => bot.say('Let\'s get started'))
+                .then(delay(1000))
                 .then(() => 'completeHubspotProfile');
         }
     },

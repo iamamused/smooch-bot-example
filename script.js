@@ -2,6 +2,7 @@
 
 const Script = require('smooch-bot').Script;
 const requestPromise = require('request-promise-native');
+const delay = require("../delay-promise");
 
 module.exports = new Script({  
     processing: {
@@ -12,7 +13,13 @@ module.exports = new Script({
     start: {
         receive: (bot) => {
             return bot.say(`Hi ${bot.appUser.givenName}, I'm Welcome Bot!`)
+                .then(() => bot.setTypingActivity(true))
+                .then(delay(1000))
+                .then(() => bot.setTypingActivity(false))
                 .then(() => bot.say('Let\'s get started'))
+                .then(() => bot.setTypingActivity(true))
+                .then(delay(1000))
+                .then(() => bot.setTypingActivity(false))
                 .then(() => 'completeHubspotProfile');
         }
     },
@@ -22,33 +29,36 @@ module.exports = new Script({
         receive: (bot, message) => {
             const email = message.text;
             return bot.setProp('email', email)
-                .then(() => bot.say(`Thanks, I have your email as ${email}.`))
-                .then(() => 
-            		bot.say(`Great ${bot.appUser.givenName}, I\'m going to set up an account with ${email} in our database...`)
-					.then(() => requestPromise({
-							method: 'POST',
-							uri: process.env.HUBSPOT_URL,
-							body: {
-								firstname: bot.appUser.givenName,
-								lastname: bot.appUser.surname,
-								email: email,
-								phone: ''
-							},
-							json: true
-						})
-						.catch(function (err) {
-							console.error(err)
-							bot.say('It looks like ' + err)
-						}))
-					.then((parsedBody) => { 
-						console.log(parsedBody)
-						if (parsedBody.message) {
-							bot.say('It looks like ' + parsedBody.message)
-						} else {
-							bot.say('I\'ve adden the contact, thanks!')
-						}
+                .then(() => bot.setTypingActivity(true))
+                .then(delay(1500))
+                .then(() => bot.setTypingActivity(false))
+                .then(() => bot.say(`Great ${bot.appUser.givenName}, I\'m going to set up an account with ${email} in our database...`))
+                .then(() => bot.setTypingActivity(true))
+				.then(() => requestPromise({
+						method: 'POST',
+						uri: process.env.HUBSPOT_URL,
+						body: {
+							firstname: bot.appUser.givenName,
+							lastname: bot.appUser.surname,
+							email: email,
+							phone: ''
+						},
+						json: true
+					})
+					.catch(function (err) {
+						console.error(err)
+						bot.say('It looks like ' + err)
 					}))
+				.then((parsedBody) => { 
+					console.log(parsedBody)
+					if (parsedBody.message) {
+						bot.say('It looks like ' + parsedBody.message)
+					} else {
+						bot.say('I\'ve adden the contact.')
+					}
+				})
                 .then(() => bot.say(`Thanks ${bot.appUser.givenName}, TTYL!`))
+                .then(() => bot.setTypingActivity(false))
 				.then(() => 'finish');
         }
     },
