@@ -16,32 +16,28 @@ module.exports = new Script({
         }
     },
 
-    askName: {
-        prompt: (bot) => bot.say('What\'s your given (first) name?'),
-        receive: (bot, message) => {
-            const firstname = message.text;
-            return bot.setProp('firstname', firstname)
-                .then(() => bot.say(`Great! I'll call you ${firstname}
-Is that OK? %[Yes](postback:yes) %[No](postback:no)`))
-                .then(() => 'askEmail');
-        }
-    },
-
  	askEmail: {
         prompt: (bot) => bot.say('What\'s your email address?'),
         receive: (bot, message) => {
             const email = message.text;
             return bot.setProp('email', email)
-                .then(() => bot.say(`I have your email as ${email}.`))
+                .then(() => bot.say(`Thanks, I have your email as ${email}.`))
+                .then(() => 'storeInHubspot');
+        }
+    },
+
+ 	storeInHubspot: {
+        receive: (bot) => {
+            return bot.getProp('email')
+            	.then((email) => bot.say(`Great ${bot.appUser.givenName}, I\'m going to set up an account with ${email} in our database...`))
                 .then(() => 'finish');
         }
+        
     },
 
     finish: {
         receive: (bot, message) => {
-	        bot.store.set('yourUserId', 'state', 'processing')
-            return bot.getProp('firstname')
-                .then((firstname) => bot.say(`Thanks ${firstname}, See you later!`))
+            return bot.say(`Thanks ${bot.appUser.givenName}, See you later!`)
                 .then(() => bot.say('If you want to reset the bot, type \'reset\''))
                 .then(() => 'finish');
         }

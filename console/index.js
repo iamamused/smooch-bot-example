@@ -7,11 +7,10 @@ const Bot = smoochBot.Bot;
 const Script = smoochBot.Script;
 const StateMachine = smoochBot.StateMachine;
 
+
 class ConsoleBot extends Bot {
-    constructor(options,first,last) {
+    constructor(options) {
         super(options);
-        this.first = first;
-        this.last = last;
     }
 
     say(text) {
@@ -22,39 +21,46 @@ class ConsoleBot extends Bot {
     }
 }
 
+class AppUserBot extends ConsoleBot {
+    constructor(options,user) {
+        super(options);
+        this.appUser = user;
+    }
+}
+
+
 let script = new Script({  
     start: {
         receive: (bot) => {
-            return bot.say(`Hi ${bot.first}, I'm Welcome Bot!`)
+            return bot.say(`Hi ${bot.appUser.givenName}, I'm Welcome Bot!`)
                 .then(() => bot.say('Let\'s get started'))
-                .then(() => 'askName');
-        }
-    },
-
-    askName: {
-        prompt: (bot) => bot.say('What\'s your name?'),
-        receive: (bot, message) => {
-            const name = message.text;
-            return bot.setProp('name', name)
-                .then(() => bot.say(`Great! I'll call you ${name}`))
                 .then(() => 'askEmail');
         }
     },
 
  	askEmail: {
-        prompt: (bot) => bot.say('I\'ll also need your emails address please.'),
+        prompt: (bot) => bot.say('What\'s your email address?'),
         receive: (bot, message) => {
             const email = message.text;
             return bot.setProp('email', email)
-                .then(() => bot.say(`I have your email as ${email}.`))
+                .then(() => bot.say(`Thanks, I have your email as ${email}.`))
+                .then(() => 'storeInHubspot');
+        }
+    },
+
+ 	storeInHubspot: {
+        receive: (bot) => {
+            return bot.getProp('email')
+            	.then((email) => bot.say(`Great ${bot.appUser.givenName}, I\'m going to set up an account with ${email} in our database...`))
                 .then(() => 'finish');
         }
+        
     },
 
     finish: {
         receive: (bot, message) => {
-            return bot.getProp('name')
-                .then((name) => bot.say(`Thanks ${name}, See you later!`))
+            return bot.say(`Thanks ${bot.appUser.givenName}, See you later!`)
+                .then(() => bot.say('If you want to reset the bot, type \'reset\''))
                 .then(() => 'finish');
         }
     }
@@ -64,11 +70,11 @@ let script = new Script({
 const userId = 'testUserId';
 const store = new MemoryStore();
 const lock = new MemoryLock();
-const bot = new ConsoleBot({
+const bot = new AppUserBot({
     store,
     lock,
     userId
-},'First', 'Last');
+},{});
 
 const stateMachine = new StateMachine({
     script,
