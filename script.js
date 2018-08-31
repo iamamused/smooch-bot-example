@@ -47,7 +47,7 @@ module.exports = new Script({
 					if (parsedBody.message) {
 						bot.say('It looks like ' + parsedBody.message)
 					} else {
-						bot.say('I\'ve adden the contact.')
+						bot.say('I\'ve added the contact.')
 					}
 				})
                 .then(() => bot.say(`Thanks ${bot.appUser.givenName}, TTYL!`))

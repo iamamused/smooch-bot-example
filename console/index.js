@@ -70,7 +70,7 @@ let script = new Script({
 						if (parsedBody.message) {
 							bot.say('It looks like ' + parsedBody.message)
 						} else {
-							bot.say('I\'ve adden the contact, thanks!')
+							bot.say('I\'ve added the contact, thanks!')
 						}
 					}))
                 .then(() => bot.say(`Thanks ${bot.appUser.givenName}, TTYL!`))
