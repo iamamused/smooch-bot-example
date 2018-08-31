@@ -82,6 +82,9 @@ if (process.env.SERVICE_URL) {
 
 function createBot(appUser) {
     const userId = appUser.userId || appUser._id;
+    const firstname = appUser.firstname || appUser.givenName;
+    const lastname = appUser.lastname || appUser.surname;
+    console.log('Create bot for user: %s (%s %s)', userid, firstname, lastname);
     return new SmoochApiBot({
         name,
         avatarUrl,
