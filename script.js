@@ -2,7 +2,7 @@
 
 const Script = require('smooch-bot').Script;
 const requestPromise = require('request-promise-native');
-const delay = require("delay-promise");
+const delay = require("./delay-promise");
 
 module.exports = new Script({  
     processing: {
