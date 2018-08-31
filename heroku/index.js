@@ -19,6 +19,12 @@ const lock = new MemoryLock();
 const webhookTriggers = ['message:appUser', 'postback'];
 const util = require('util')
 
+class AppUserBot extends SmoochApiBot {
+    constructor(options,user) {
+        super(options);
+        this.appUser = user;
+    }
+}
 
 function createWebhook(smoochCore, target) {
     return smoochCore.webhooks.create({
@@ -86,20 +92,13 @@ function createBot(appUser) {
     const userId = appUser.userId || appUser._id;
     console.log('Create bot for user: %s', userId);
     console.log(util.inspect(appUser, false, null));
-    const bot = new SmoochApiBot({
+    return new AppUserBot({
         name,
         avatarUrl,
         lock,
         store,
         userId
-    });
-    bot.setProp('firstname', appUser.givenName);
-    bot.setProp('lastname', appUser.surname);
-
-    console.log('First name: %s, %s', bot.getProp('firstname'), appUser.givenName);
-    console.log('Last name: %s, %s', bot.getProp('lastname'), appUser.lastName);
-
-    return bot;
+    },appUser);
 }
 
 function handleMessages(req, res) {

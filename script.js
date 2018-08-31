@@ -10,8 +10,7 @@ module.exports = new Script({
     
     start: {
         receive: (bot) => {
-            return bot.getProp('firstname')
-                .then((firstname) => bot.say(`Hi ${firstname}, I'm Welcome Bot!`))
+            return bot.say(`Hi ${bot.appUser.givenName}, I'm Welcome Bot!`)
                 .then(() => bot.say('Let\'s get started'))
                 .then(() => 'askEmail');
         }

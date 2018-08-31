@@ -8,8 +8,10 @@ const Script = smoochBot.Script;
 const StateMachine = smoochBot.StateMachine;
 
 class ConsoleBot extends Bot {
-    constructor(options) {
+    constructor(options,first,last) {
         super(options);
+        this.first = first;
+        this.last = last;
     }
 
     say(text) {
@@ -23,8 +25,7 @@ class ConsoleBot extends Bot {
 let script = new Script({  
     start: {
         receive: (bot) => {
-            return bot.getProp('firstname')
-                .then((name) => bot.say(`Hi ${name}, I'm Welcome Bot!`))
+            return bot.say(`Hi ${bot.first}, I'm Welcome Bot!`)
                 .then(() => bot.say('Let\'s get started'))
                 .then(() => 'askName');
         }
@@ -67,7 +68,7 @@ const bot = new ConsoleBot({
     store,
     lock,
     userId
-});
+},'First', 'Last');
 
 const stateMachine = new StateMachine({
     script,
