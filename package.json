@@ -12,6 +12,8 @@
     "express": "^4.13.4",
     "hbs": "^4.0.0",
     "jsonwebtoken": "^5.7.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
     "smooch-bot": "^1.0.1",
     "smooch-core": "^2.0.0"
   },

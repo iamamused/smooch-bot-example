@@ -6,6 +6,7 @@ const MemoryLock = smoochBot.MemoryLock;
 const Bot = smoochBot.Bot;
 const Script = smoochBot.Script;
 const StateMachine = smoochBot.StateMachine;
+const requestPromise = require('request-promise-native');
 
 
 class ConsoleBot extends Bot {
@@ -34,33 +35,49 @@ let script = new Script({
         receive: (bot) => {
             return bot.say(`Hi ${bot.appUser.givenName}, I'm Welcome Bot!`)
                 .then(() => bot.say('Let\'s get started'))
-                .then(() => 'askEmail');
+                .then(() => 'completeHubspotProfile');
         }
     },
 
- 	askEmail: {
+ 	completeHubspotProfile: {
         prompt: (bot) => bot.say('What\'s your email address?'),
         receive: (bot, message) => {
             const email = message.text;
             return bot.setProp('email', email)
                 .then(() => bot.say(`Thanks, I have your email as ${email}.`))
-                .then(() => 'storeInHubspot');
+                .then(() => 
+            		bot.say(`Great ${bot.appUser.givenName}, I\'m going to set up an account with ${email} in our database...`)
+					.then(() => requestPromise({
+							method: 'POST',
+							uri: process.env.HUBSPOT_URL,
+							body: {
+								firstname: bot.appUser.givenName,
+								lastname: bot.appUser.surname,
+								email: email,
+								phone: ''
+							},
+							json: true
+						})
+						.catch(function (err) {
+							console.error(err)
+							bot.say('It looks like ' + err)
+						}))
+					.then((parsedBody) => { 
+						console.log(parsedBody)
+						if (parsedBody.message) {
+							bot.say('It looks like ' + parsedBody.message)
+						} else {
+							bot.say('I\'ve adden the contact, thanks!')
+						}
+					}))
+                .then(() => bot.say(`Thanks ${bot.appUser.givenName}, TTYL!`))
+				.then(() => 'finish');
         }
-    },
-
- 	storeInHubspot: {
-        receive: (bot) => {
-            return bot.getProp('email')
-            	.then((email) => bot.say(`Great ${bot.appUser.givenName}, I\'m going to set up an account with ${email} in our database...`))
-                .then(() => 'finish');
-        }
-        
     },
 
     finish: {
         receive: (bot, message) => {
-            return bot.say(`Thanks ${bot.appUser.givenName}, See you later!`)
-                .then(() => bot.say('If you want to reset the bot, type \'reset\''))
+            return bot.say('If you want to reset the bot, type \'reset\'')
                 .then(() => 'finish');
         }
     }
@@ -74,7 +91,7 @@ const bot = new AppUserBot({
     store,
     lock,
     userId
-},{});
+},{'givenName':'test','surname':'user'});
 
 const stateMachine = new StateMachine({
     script,
