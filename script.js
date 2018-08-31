@@ -13,13 +13,9 @@ module.exports = new Script({
     start: {
         receive: (bot) => {
             return bot.say(`Hi ${bot.appUser.givenName}, I'm Welcome Bot!`)
-                .then(() => bot.setTypingActivity(true))
                 .then(delay(1000))
-                .then(() => bot.setTypingActivity(false))
                 .then(() => bot.say('Let\'s get started'))
-                .then(() => bot.setTypingActivity(true))
                 .then(delay(1000))
-                .then(() => bot.setTypingActivity(false))
                 .then(() => 'completeHubspotProfile');
         }
     },
@@ -29,11 +25,8 @@ module.exports = new Script({
         receive: (bot, message) => {
             const email = message.text;
             return bot.setProp('email', email)
-                .then(() => bot.setTypingActivity(true))
                 .then(delay(1500))
-                .then(() => bot.setTypingActivity(false))
                 .then(() => bot.say(`Great ${bot.appUser.givenName}, I\'m going to set up an account with ${email} in our database...`))
-                .then(() => bot.setTypingActivity(true))
 				.then(() => requestPromise({
 						method: 'POST',
 						uri: process.env.HUBSPOT_URL,
@@ -58,7 +51,6 @@ module.exports = new Script({
 					}
 				})
                 .then(() => bot.say(`Thanks ${bot.appUser.givenName}, TTYL!`))
-                .then(() => bot.setTypingActivity(false))
 				.then(() => 'finish');
         }
     },
