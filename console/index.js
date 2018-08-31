@@ -23,7 +23,9 @@ class ConsoleBot extends Bot {
 let script = new Script({  
     start: {
         receive: (bot) => {
-            return bot.say('Hi! I\'m Smooch Bot!')
+            return bot.getProp('firstname')
+                .then((name) => bot.say(`Hi ${name}, I'm Welcome Bot!`))
+                .then(() => bot.say('Let\'s get started'))
                 .then(() => 'askName');
         }
     },
