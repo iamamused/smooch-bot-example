@@ -34,7 +34,8 @@ module.exports = new Script({
 							firstname: bot.appUser.givenName,
 							lastname: bot.appUser.surname,
 							email: email,
-							phone: ''
+							phone: '',
+							smoochid: bot.userId
 						},
 						json: true
 					})
